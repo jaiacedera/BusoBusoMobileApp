@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "333917618521",
+    "project_id": "busobusomobileapp",
+    "storage_bucket": "busobusomobileapp.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:333917618521:android:80ab04ce061f07a11c0c48",
+        "android_client_info": {
+          "package_name": "com.anonymous.BusoBusoMobileApp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDsufah_MhI50jShMhKvioS3t_hhLry_W8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
