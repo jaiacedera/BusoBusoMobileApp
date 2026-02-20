@@ -1,17 +1,17 @@
 import { useRouter } from 'expo-router';
 import React from 'react';
 import {
-    Dimensions,
-    Image,
-    ImageBackground,
-    StatusBar,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Dimensions,
+  Image,
+  ImageBackground,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 
-const { height: SCREEN_HEIGHT } = Dimensions.get('window');
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const GetStartedScreen = () => {
   const router = useRouter();
@@ -31,7 +31,11 @@ const GetStartedScreen = () => {
       >
         <View style={styles.overlay}>
           
-          <View style={styles.logoContainer}>
+          {/* Vertical Spacer to push content down */}
+          <View style={{ flex: 1.5 }} /> 
+
+          <View style={styles.mainContent}>
+            {/* LOGO CONTAINER */}
             <View style={styles.circle}>
               <Image 
                 source={require('../../assets/images/busobuso_logo.png')} 
@@ -39,26 +43,29 @@ const GetStartedScreen = () => {
                 resizeMode="contain"
               />
             </View>
+
+            <View style={styles.textContainer}>
+              <Text style={styles.mainTitle}>
+                {"BARANGAY BUSO-BUSO\nRESIDENT EOC APP"}
+              </Text>
+              <Text style={styles.subTitle}>
+                Your guide to safety and preparedness
+              </Text>
+            </View>
           </View>
 
-          <View style={styles.textContainer}>
-            <Text style={styles.mainTitle}>
-              {"BARANGAY BUSO-BUSO\nRESIDENT EOC APP"}
-            </Text>
-            <Text style={styles.subTitle}>
-              Your guide to safety and preparedness
-            </Text>
-          </View>
+          {/* Bottom Spacer */}
+          <View style={{ flex: 1 }} /> 
 
-          <TouchableOpacity 
-            style={styles.button}
-            activeOpacity={0.8}
-            onPress={handleGetStarted}
-          >
-            <Text style={styles.buttonText}>GET STARTED</Text>
-          </TouchableOpacity>
+          <View style={styles.bottomSection}>
+            <TouchableOpacity 
+              style={styles.button}
+              activeOpacity={0.8}
+              onPress={handleGetStarted}
+            >
+              <Text style={styles.buttonText}>GET STARTED</Text>
+            </TouchableOpacity>
 
-          <View style={styles.footer}>
             <Text style={styles.footerText}>
               Stay informed. Stay safe. © 2025 All rights reserved.
             </Text>
@@ -81,77 +88,82 @@ const styles = StyleSheet.create({
   },
   overlay: { 
     flex: 1, 
-    backgroundColor: 'rgba(0,0,0,0.1)' 
+    backgroundColor: 'rgba(0,0,0,0.2)', 
+    alignItems: 'center',
+    paddingBottom: SCREEN_HEIGHT * 0.05,
   },
-  logoContainer: { 
-    position: 'absolute', 
-    top: 262, 
-    left: 0, 
-    right: 0, 
-    alignItems: 'center' 
+  mainContent: {
+    alignItems: 'center',
+    width: '100%',
   },
   circle: {
-    width: 136, 
-    height: 136, 
-    borderRadius: 68, 
+    width: SCREEN_WIDTH * 0.5,
+    height: SCREEN_WIDTH * 0.5,
+    // Math fix: Radius must be exactly half of width/height
+    borderRadius: (SCREEN_WIDTH * 0.5) / 2, 
     backgroundColor: 'white',
     justifyContent: 'center', 
     alignItems: 'center', 
-    elevation: 4,
+    // Ensure the container truly clips its children to the rounded shape on Android
+    overflow: 'hidden',
+    // Keep 1:1 aspect ratio as a safeguard
+    aspectRatio: 1,
+    elevation: 10,
     shadowColor: '#000', 
-    shadowOffset: { width: 0, height: 4 }, 
-    shadowOpacity: 0.25, 
-    shadowRadius: 4, 
-    padding: 8,
+    shadowOffset: { width: 0, height: 5 }, 
+    shadowOpacity: 0.3, 
+    shadowRadius: 5, 
+    marginBottom: 20,
   },
   logoImage: { 
+    // 85% gives the logo a small white border inside the circle
     width: '100%', 
     height: '100%' 
   },
   textContainer: { 
-    position: 'absolute', 
-    top: SCREEN_HEIGHT * 0.4883, 
-    left: 0, 
-    right: 0, 
-    alignItems: 'center' 
+    alignItems: 'center',
+    paddingHorizontal: 20,
   },
   mainTitle: { 
-    fontWeight: '800', 
-    fontSize: 20, 
-    color: '#F2EFEF', 
-    textAlign: 'center' 
+    fontWeight: '900', 
+    fontSize: SCREEN_WIDTH * 0.065, 
+    color: '#FFFFFF', 
+    textAlign: 'center',
+    lineHeight: SCREEN_WIDTH * 0.085,
+    textShadowColor: 'rgba(0, 0, 0, 0.5)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 5,
   },
   subTitle: { 
-    fontSize: 13, 
+    fontSize: SCREEN_WIDTH * 0.04, 
     color: '#F2EFEF', 
     textAlign: 'center', 
-    marginTop: 12 
+    marginTop: 8,
+  },
+  bottomSection: {
+    width: '100%',
+    alignItems: 'center',
   },
   button: {
-    position: 'absolute', 
-    bottom: 100, 
-    left: 54, 
-    right: 54, 
-    height: 45,
+    // Smaller responsive width
+    width: SCREEN_WIDTH * 0.6, 
+    height: 50,
     backgroundColor: 'white', 
-    borderRadius: 33, 
+    borderRadius: 25, 
     justifyContent: 'center', 
     alignItems: 'center',
+    marginBottom: 15,
+    elevation: 4,
   },
   buttonText: { 
     color: '#274C77', 
-    fontWeight: 'bold', 
-    fontSize: 16 
-  },
-  footer: { 
-    position: 'absolute', 
-    bottom: SCREEN_HEIGHT * 0.0493, 
-    left: 0, 
-    right: 0 
+    fontWeight: '900', 
+    fontSize: 16,
   },
   footerText: { 
-    fontSize: 12, 
-    color: '#F2EFEF', 
-    textAlign: 'center' 
+    fontSize: 11, 
+    color: '#FFFFFF', 
+    textAlign: 'center',
+    opacity: 0.8 
   }
 });
