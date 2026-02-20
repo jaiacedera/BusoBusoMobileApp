@@ -11,13 +11,13 @@ import { getFirestore } from 'firebase/firestore';
 // Your web app's Firebase configuration
 //hingin kay llyne say ang config 
 const firebaseConfig = {
-  apiKey: "AIzaSyAV7FH2jNOxemo_gHqzI1rOSZkvOi9PE9Q",
-  authDomain: "busobusomobileapp.firebaseapp.com",
-  projectId: "busobusomobileapp",
-  storageBucket: "busobusomobileapp.firebasestorage.app",
-  messagingSenderId: "333917618521",
-  appId: "1:333917618521:web:c8b71ffe547f8dca1c0c48",
-  measurementId: "G-0DRQ6TS3XQ"
+  apiKey: "AIzaSyATJc7J7Jzvhiq6k7rN5VrIXUfDRUDPjf8",
+  authDomain: "buso-busowebdashboard.firebaseapp.com",
+  projectId: "buso-busowebdashboard",
+  storageBucket: "buso-busowebdashboard.firebasestorage.app",
+  messagingSenderId: "964264919257",
+  appId: "1:964264919257:web:13696fd17a2765f3b5fec8",
+  measurementId: "G-FFRSENZKC6"
 };
 
 // Initialize Firebase once

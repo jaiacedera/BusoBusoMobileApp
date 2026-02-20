@@ -18,7 +18,7 @@ export async function saveUserProfile(profile: UserProfileInput): Promise<void> 
   }
 
   await setDoc(
-    doc(db, 'users', currentUser.uid),
+    doc(db, 'residents', currentUser.uid),
     {
       uid: currentUser.uid,
       email: currentUser.email ?? null,

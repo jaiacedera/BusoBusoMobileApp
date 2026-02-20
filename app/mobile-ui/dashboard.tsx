@@ -1,4 +1,5 @@
 import { MaterialIcons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
     Dimensions,
@@ -21,16 +22,9 @@ const THEME_BLUE = '#274C77';
 const BG_COLOR = '#F0F4F8';
 const { height } = Dimensions.get('window');
 
-// --- Placeholder for Profile Page ---
-const ProfilePage = () => (
-  <View style={styles.centerContent}>
-    <Text style={{ color: 'grey' }}>Profile Page Content</Text>
-  </View>
-);
-
 export default function DashboardScreen() {
+  const router = useRouter();
   const navigation = useNavigation<any>();
-  const [currentIndex, setCurrentIndex] = useState(0);
   
   // Modal states
   const [actionMenuVisible, setActionMenuVisible] = useState(false);
@@ -40,26 +34,24 @@ export default function DashboardScreen() {
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
         
-        {/* APP BAR (Only visible on Home) */}
-        {currentIndex === 0 && (
-          <View style={styles.appBar}>
-            <View style={styles.appBarLeft}>
-              <Image 
-                source={require('../../assets/images/busobuso_logo.png')} 
-                style={styles.logoImage} 
-                resizeMode="contain"
-              />
-              <Text style={styles.appBarTitle}>Dashboard</Text>
-            </View>
-            <TouchableOpacity onPress={() => {}}>
-              <MaterialIcons name="search" size={28} color={THEME_BLUE} />
-            </TouchableOpacity>
+        {/* APP BAR */}
+        <View style={styles.appBar}>
+          <View style={styles.appBarLeft}>
+            <Image 
+              source={require('../../assets/images/busobuso_logo.png')} 
+              style={styles.logoImage} 
+              resizeMode="contain"
+            />
+            <Text style={styles.appBarTitle}>Dashboard</Text>
           </View>
-        )}
+          <TouchableOpacity onPress={() => {}}>
+            <MaterialIcons name="search" size={28} color={THEME_BLUE} />
+          </TouchableOpacity>
+        </View>
 
         {/* MAIN CONTENT AREA */}
         <View style={styles.body}>
-          {currentIndex === 0 ? <HomeContent /> : <ProfilePage />}
+          <HomeContent />
           
           {/* CHATBOT FLOATING BUTTON */}
           <TouchableOpacity 
@@ -80,12 +72,12 @@ export default function DashboardScreen() {
           <View style={styles.bottomNav}>
             <TouchableOpacity 
               style={styles.navItem} 
-              onPress={() => setCurrentIndex(0)}
+              onPress={() => router.replace('/mobile-ui/dashboard')}
             >
               <MaterialIcons 
                 name="home" 
                 size={30} 
-                color={currentIndex === 0 ? 'white' : 'rgba(255,255,255,0.54)'} 
+                color="white" 
               />
             </TouchableOpacity>
 
@@ -94,12 +86,12 @@ export default function DashboardScreen() {
 
             <TouchableOpacity 
               style={styles.navItem} 
-              onPress={() => setCurrentIndex(1)}
+              onPress={() => router.push('/mobile-ui/profile-screen')}
             >
               <MaterialIcons 
                 name="person-outline" 
                 size={30} 
-                color={currentIndex === 1 ? 'white' : 'rgba(255,255,255,0.54)'} 
+                color="rgba(255,255,255,0.54)" 
               />
             </TouchableOpacity>
           </View>
@@ -273,11 +265,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: BG_COLOR,
-  },
-  centerContent: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   // App Bar
   appBar: {

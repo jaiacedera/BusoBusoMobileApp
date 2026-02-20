@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "333917618521",
-    "project_id": "busobusomobileapp",
-    "storage_bucket": "busobusomobileapp.firebasestorage.app"
+    "project_number": "964264919257",
+    "project_id": "buso-busowebdashboard",
+    "storage_bucket": "buso-busowebdashboard.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:333917618521:android:80ab04ce061f07a11c0c48",
+        "mobilesdk_app_id": "1:964264919257:android:24483b77136e4bf9b5fec8",
         "android_client_info": {
           "package_name": "com.anonymous.BusoBusoMobileApp"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDsufah_MhI50jShMhKvioS3t_hhLry_W8"
+          "current_key": "AIzaSyByrqSZIRW9qLXsEHKL2UI691ZeRfoJ-oY"
         }
       ],
       "services": {

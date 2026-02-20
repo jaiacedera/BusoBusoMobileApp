@@ -6,7 +6,7 @@ export default function RootLayout() {
     <Stack
       screenOptions={{
         headerShown: false, // Hides the top bar for a cleaner look
-        animation: 'fade',  // Smooth transition between screens
+        animation: 'none',
       }}
     >
       {/* The Stack will automatically find your files. 

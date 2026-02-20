@@ -34,6 +34,11 @@ export const signUpUser = async (
         Alert.alert('Error', 'That email address is already in use!');
       } else if (error.code === 'auth/invalid-email') {
         Alert.alert('Error', 'That email address is invalid!');
+      } else if (error.code === 'auth/operation-not-allowed') {
+        Alert.alert(
+          'Sign Up Disabled',
+          'Email/Password sign-up is not enabled in Firebase Console for this project.'
+        );
       } else {
         Alert.alert('Sign Up Error', error.message);
       }
@@ -59,6 +64,11 @@ export const signInUser = async (
         error.code === 'auth/invalid-credential'
       ) {
         Alert.alert('Error', 'Invalid email or password');
+      } else if (error.code === 'auth/operation-not-allowed') {
+        Alert.alert(
+          'Login Disabled',
+          'Email/Password sign-in is not enabled in Firebase Console for this project.'
+        );
       } else {
         Alert.alert('Login Error', error.message);
       }
