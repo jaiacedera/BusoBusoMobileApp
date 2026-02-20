@@ -3,30 +3,48 @@ import { useRouter } from 'expo-router';
 import { doc, onSnapshot } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
 import {
-    ActivityIndicator,
-    FlatList,
-    Image,
-    ImageBackground,
-    Modal,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  FlatList,
+  Image,
+  ImageBackground,
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { auth, db } from '../../services/firebaseconfig';
 
 const THEME_BLUE = '#274C77';
 
+type ResidentProfile = {
+  firstName?: string;
+  middleInitial?: string;
+  lastName?: string;
+  address?: string;
+  contactNumber?: string;
+  emergencyContact?: string;
+};
+
 const ProfileScreen = () => {
   const router = useRouter();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [displayName, setDisplayName] = useState<string>();
+  const [profileData, setProfileData] = useState<ResidentProfile | null>(null);
+  const [isProfileLoading, setIsProfileLoading] = useState(true);
+  const [showPersonalInfoModal, setShowPersonalInfoModal] = useState(false);
+  const [chatbotVisible, setChatbotVisible] = useState(false);
 
   useEffect(() => {
     const currentUser = auth.currentUser;
 
     if (!currentUser) {
       setDisplayName(undefined);
+      setProfileData(null);
+      setIsProfileLoading(false);
       return;
     }
 
@@ -37,14 +55,15 @@ const ProfileScreen = () => {
       (profileSnap) => {
         if (!profileSnap.exists()) {
           setDisplayName(undefined);
+          setProfileData(null);
+          setIsProfileLoading(false);
           return;
         }
 
-        const data = profileSnap.data() as {
-          firstName?: string;
-          middleInitial?: string;
-          lastName?: string;
-        };
+        const data = profileSnap.data() as ResidentProfile;
+
+        setProfileData(data);
+        setIsProfileLoading(false);
 
         const fullName = [
           data.firstName?.trim(),
@@ -58,6 +77,7 @@ const ProfileScreen = () => {
       },
       (error) => {
         console.error('Failed to listen to profile name:', error);
+        setIsProfileLoading(false);
       }
     );
 
@@ -87,8 +107,10 @@ const ProfileScreen = () => {
   const handlePress = (item: any) => {
     if (item.isLogout) {
       handleLogout();
+    } else if (item.title === 'Personal Information') {
+      setShowPersonalInfoModal(true);
     } else if (item.title === 'Tracker') {
-      router.push('/Mobile UI/tracker' as any);
+      router.push('/mobile-ui/reports-tracker-screen');
     } else {
       console.log(`Tapped on ${item.title}`);
     }
@@ -145,6 +167,18 @@ const ProfileScreen = () => {
         />
       </View>
 
+      <TouchableOpacity
+        style={styles.chatbotFab}
+        onPress={() => setChatbotVisible(true)}
+        activeOpacity={0.8}
+      >
+        <Image
+          source={require('../../assets/images/pyro_logo.png')}
+          style={styles.chatbotImage}
+          resizeMode="contain"
+        />
+      </TouchableOpacity>
+
       <View style={styles.bottomNavContainer}>
         <View style={styles.bottomNav}>
           <TouchableOpacity
@@ -175,6 +209,94 @@ const ProfileScreen = () => {
           <View style={styles.modalContent}>
             <ActivityIndicator size="large" color={THEME_BLUE} />
             <Text style={styles.logoutText}>Logging out...</Text>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal visible={chatbotVisible} transparent animationType="slide">
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={styles.chatbotOverlay}
+        >
+          <TouchableOpacity
+            style={{ flex: 1, width: '100%' }}
+            activeOpacity={1}
+            onPress={() => setChatbotVisible(false)}
+          />
+
+          <View style={styles.chatbotContainer}>
+            <View style={styles.menuHandle} />
+            <Text style={styles.chatbotTitle}>Buso-Buso Assistant</Text>
+            <View style={styles.divider} />
+
+            <View style={styles.chatbotBody}>
+              <Text style={styles.chatbotPlaceholderText}>How can I help you today?</Text>
+            </View>
+
+            <View style={styles.chatbotInputContainer}>
+              <TextInput
+                style={styles.chatbotInput}
+                placeholder="Type a message..."
+                placeholderTextColor="grey"
+              />
+              <TouchableOpacity style={styles.sendButton}>
+                <MaterialIcons name="send" size={24} color={THEME_BLUE} />
+              </TouchableOpacity>
+            </View>
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
+
+      <Modal
+        visible={showPersonalInfoModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowPersonalInfoModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.personalInfoModalCard}>
+            <Text style={styles.personalInfoTitle}>Personal Information</Text>
+
+            {isProfileLoading ? (
+              <ActivityIndicator size="small" color={THEME_BLUE} />
+            ) : !profileData ? (
+              <Text style={styles.emptyInfoText}>No saved personal information found.</Text>
+            ) : (
+              <View style={styles.personalInfoList}>
+                <View style={styles.infoRow}>
+                  <Text style={styles.infoLabel}>First Name</Text>
+                  <Text style={styles.infoValue}>{profileData.firstName || '-'}</Text>
+                </View>
+                <View style={styles.infoRow}>
+                  <Text style={styles.infoLabel}>Last Name</Text>
+                  <Text style={styles.infoValue}>{profileData.lastName || '-'}</Text>
+                </View>
+                <View style={styles.infoRow}>
+                  <Text style={styles.infoLabel}>Middle Initial</Text>
+                  <Text style={styles.infoValue}>{profileData.middleInitial || '-'}</Text>
+                </View>
+                <View style={styles.infoRow}>
+                  <Text style={styles.infoLabel}>Address</Text>
+                  <Text style={styles.infoValue}>{profileData.address || '-'}</Text>
+                </View>
+                <View style={styles.infoRow}>
+                  <Text style={styles.infoLabel}>Contact Number</Text>
+                  <Text style={styles.infoValue}>{profileData.contactNumber || '-'}</Text>
+                </View>
+                <View style={styles.infoRow}>
+                  <Text style={styles.infoLabel}>Emergency Contact</Text>
+                  <Text style={styles.infoValue}>{profileData.emergencyContact || '-'}</Text>
+                </View>
+              </View>
+            )}
+
+            <TouchableOpacity
+              style={styles.closeInfoButton}
+              onPress={() => setShowPersonalInfoModal(false)}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.closeInfoButtonText}>Close</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
@@ -266,6 +388,18 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: THEME_BLUE,
   },
+  chatbotFab: {
+    position: 'absolute',
+    bottom: 70,
+    right: 20,
+    width: 65,
+    height: 65,
+    zIndex: 100,
+  },
+  chatbotImage: {
+    width: '100%',
+    height: '100%',
+  },
   bottomNavContainer: {
     position: 'absolute',
     bottom: 0,
@@ -324,5 +458,109 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: 'white',
+  },
+  personalInfoModalCard: {
+    width: '88%',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 18,
+  },
+  personalInfoTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: THEME_BLUE,
+    marginBottom: 12,
+  },
+  personalInfoList: {
+    gap: 8,
+  },
+  infoRow: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#E2E8F0',
+    paddingBottom: 8,
+  },
+  infoLabel: {
+    color: '#64748B',
+    fontSize: 12,
+    marginBottom: 2,
+  },
+  infoValue: {
+    color: '#1E293B',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  emptyInfoText: {
+    color: '#64748B',
+    fontStyle: 'italic',
+    marginBottom: 12,
+  },
+  closeInfoButton: {
+    marginTop: 16,
+    backgroundColor: THEME_BLUE,
+    borderRadius: 10,
+    paddingVertical: 10,
+    alignItems: 'center',
+  },
+  closeInfoButtonText: {
+    color: '#FFFFFF',
+    fontWeight: '700',
+  },
+  chatbotOverlay: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0,0,0,0.4)',
+  },
+  menuHandle: {
+    width: 40,
+    height: 5,
+    backgroundColor: '#E0E0E0',
+    borderRadius: 5,
+    alignSelf: 'center',
+    marginTop: 10,
+    marginBottom: 10,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: '#EEEEEE',
+  },
+  chatbotContainer: {
+    backgroundColor: 'white',
+    height: '70%',
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+    paddingBottom: Platform.OS === 'ios' ? 20 : 0,
+  },
+  chatbotTitle: {
+    color: THEME_BLUE,
+    fontWeight: 'bold',
+    fontSize: 18,
+    padding: 20,
+    paddingTop: 10,
+  },
+  chatbotBody: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  chatbotPlaceholderText: {
+    color: 'grey',
+  },
+  chatbotInputContainer: {
+    flexDirection: 'row',
+    padding: 20,
+    alignItems: 'center',
+  },
+  chatbotInput: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#CCC',
+    borderRadius: 30,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    marginRight: 10,
+    color: 'black',
+  },
+  sendButton: {
+    padding: 10,
   },
 });

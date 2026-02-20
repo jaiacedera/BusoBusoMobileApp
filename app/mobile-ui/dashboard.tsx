@@ -2,17 +2,17 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
-    Dimensions,
-    Image,
-    KeyboardAvoidingView,
-    Modal,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Dimensions,
+  Image,
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -130,7 +130,7 @@ export default function DashboardScreen() {
         </Modal>
 
         {/* 2. Chatbot Modal */}
-        <Modal visible={chatbotVisible} transparent animationType="none">
+        <Modal visible={chatbotVisible} transparent animationType="slide">
           <KeyboardAvoidingView 
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             style={styles.modalOverlay}
@@ -297,13 +297,14 @@ const styles = StyleSheet.create({
   // Chatbot Button
   chatbotFab: {
     position: 'absolute',
-    bottom: 20,
+    bottom: 70,
     right: 20,
     width: 65,
     height: 65,
     zIndex: 100,
   },
   chatbotImage: {
+    // Adjust chatbot image size/placement here (height, width, and position offsets)
     width: '100%',
     height: '100%',
   },

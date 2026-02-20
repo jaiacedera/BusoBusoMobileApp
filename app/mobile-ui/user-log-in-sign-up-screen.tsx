@@ -209,8 +209,9 @@ export default function UserLogInSignUp() {
             )}
 
             {/* Submit Button handles both Login and Signup navigation after auth */}
+            {/* Sign Up button when isLogin is false */}
             <TouchableOpacity 
-              style={[styles.mainBtn, { marginTop: isLogin ? 30 : 8 }]}
+              style={[styles.mainBtn, { marginTop: isLogin ? 30 : 25 }]}
               activeOpacity={0.8}
               onPress={handleSubmit}
               disabled={loading}
@@ -326,7 +327,7 @@ const styles = StyleSheet.create({
   },
   activeIndicator: { 
     position: 'absolute', 
-    bottom: 40, 
+    bottom: 0, 
     width: 82, 
     height: 3, 
     backgroundColor: '#FFFFFF' 
