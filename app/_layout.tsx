@@ -14,8 +14,9 @@ export default function RootLayout() {
         but you can define the initial route.
       */}
       <Stack.Screen name="index" /> 
-      <Stack.Screen name="Mobile UI/UserLogInSignUpScreen" />
-      <Stack.Screen name="Mobile UI/Dashboard" />
+      <Stack.Screen name="mobile-ui/user-log-in-sign-up-screen" />
+      <Stack.Screen name="mobile-ui/dashboard" />
+      <Stack.Screen name="mobile-ui/user-form" />
     </Stack>
   );
 }

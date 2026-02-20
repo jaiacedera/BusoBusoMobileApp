@@ -58,14 +58,14 @@ export default function UserLogInSignUp() {
         const user = await signInUser(email, password);
         if (user) {
           // Navigate to Dashboard on successful login
-          router.push('/Mobile UI/Dashboard' as any);
+          router.push('/mobile-ui/dashboard');
         }
       } else {
         // --- SIGNUP LOGIC ---
         const user = await signUpUser(email, password);
         if (user) {
           // Navigate to UserForm on successful signup
-          router.push('/Mobile UI/UserForm' as any);
+          router.push('/mobile-ui/user-form');
         }
       }
     } catch (error) {

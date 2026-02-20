@@ -1,14 +1,14 @@
 import { useRouter } from 'expo-router';
 import React from 'react';
 import {
-  Dimensions,
-  Image,
-  ImageBackground,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    Dimensions,
+    Image,
+    ImageBackground,
+    StatusBar,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -17,7 +17,7 @@ const GetStartedScreen = () => {
   const router = useRouter();
 
   const handleGetStarted = () => {
-    router.push('/Mobile UI/UserLogInSignUpScreen' as any);
+    router.push('/mobile-ui/user-log-in-sign-up-screen');
   };
 
   return (
