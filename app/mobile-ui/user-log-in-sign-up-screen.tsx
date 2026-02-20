@@ -57,7 +57,7 @@ export default function UserLogInSignUp() {
         const user = await signInUser(email, password);
         if (user) {
           // Navigate to Dashboard on successful login
-          router.push('/mobile-ui/dashboard');
+          router.replace('/mobile-ui/dashboard');
         }
       } else {
         // --- SIGNUP LOGIC ---

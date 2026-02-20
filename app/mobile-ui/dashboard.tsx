@@ -15,8 +15,6 @@ import {
     View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-// Assuming you are using React Navigation
-import { useNavigation } from '@react-navigation/native';
 
 const THEME_BLUE = '#274C77';
 const BG_COLOR = '#F0F4F8';
@@ -24,14 +22,13 @@ const { height } = Dimensions.get('window');
 
 export default function DashboardScreen() {
   const router = useRouter();
-  const navigation = useNavigation<any>();
   
   // Modal states
   const [actionMenuVisible, setActionMenuVisible] = useState(false);
   const [chatbotVisible, setChatbotVisible] = useState(false);
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
       <View style={styles.container}>
         
         {/* APP BAR */}
@@ -86,7 +83,7 @@ export default function DashboardScreen() {
 
             <TouchableOpacity 
               style={styles.navItem} 
-              onPress={() => router.push('/mobile-ui/profile-screen')}
+              onPress={() => router.replace('/mobile-ui/profile-screen')}
             >
               <MaterialIcons 
                 name="person-outline" 
@@ -97,10 +94,10 @@ export default function DashboardScreen() {
           </View>
 
           {/* CENTER FAB BUTTON */}
-          <TouchableOpacity 
-            style={styles.centerFab} 
-            onPress={() => setActionMenuVisible(true)}
+          <TouchableOpacity
+            style={styles.centerFab}
             activeOpacity={0.9}
+            onPress={() => setActionMenuVisible(true)}
           >
             <MaterialIcons name="add" size={35} color="white" />
           </TouchableOpacity>
@@ -109,7 +106,7 @@ export default function DashboardScreen() {
         {/* --- MODALS --- */}
 
         {/* 1. Action Menu Modal */}
-        <Modal visible={actionMenuVisible} transparent animationType="slide">
+        <Modal visible={actionMenuVisible} transparent animationType="none">
           <TouchableOpacity 
             style={styles.modalOverlay} 
             activeOpacity={1} 
@@ -122,31 +119,18 @@ export default function DashboardScreen() {
                 style={styles.menuItem} 
                 onPress={() => {
                   setActionMenuVisible(false);
-                  navigation.navigate('Reports'); // Replace with your route name
+                  router.push('/mobile-ui/reports-screen');
                 }}
               >
                 <MaterialIcons name="report-problem" size={24} color="red" />
-                <Text style={styles.menuItemText}>Incident Report</Text>
-              </TouchableOpacity>
-
-              <View style={styles.divider} />
-
-              <TouchableOpacity 
-                style={styles.menuItem} 
-                onPress={() => {
-                  setActionMenuVisible(false);
-                  navigation.navigate('CitizenRequest'); // Replace with your route name
-                }}
-              >
-                <MaterialIcons name="people" size={24} color={THEME_BLUE} />
-                <Text style={styles.menuItemText}>Citizenss Request</Text>
+                <Text style={styles.menuItemText}>Make an Incident Report</Text>
               </TouchableOpacity>
             </View>
           </TouchableOpacity>
         </Modal>
 
         {/* 2. Chatbot Modal */}
-        <Modal visible={chatbotVisible} transparent animationType="slide">
+        <Modal visible={chatbotVisible} transparent animationType="none">
           <KeyboardAvoidingView 
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             style={styles.modalOverlay}

@@ -15,7 +15,18 @@ export default function RootLayout() {
       */}
       <Stack.Screen name="index" /> 
       <Stack.Screen name="mobile-ui/user-log-in-sign-up-screen" />
-      <Stack.Screen name="mobile-ui/dashboard" />
+      <Stack.Screen
+        name="mobile-ui/dashboard"
+        options={{
+          gestureEnabled: false,
+        }}
+      />
+      <Stack.Screen
+        name="mobile-ui/profile-screen"
+        options={{
+          gestureEnabled: false,
+        }}
+      />
       <Stack.Screen name="mobile-ui/user-form" />
     </Stack>
   );

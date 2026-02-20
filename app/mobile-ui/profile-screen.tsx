@@ -1,6 +1,7 @@
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import { doc, onSnapshot } from 'firebase/firestore';
+import React, { useEffect, useState } from 'react';
 import {
     ActivityIndicator,
     FlatList,
@@ -12,12 +13,56 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
+import { auth, db } from '../../services/firebaseconfig';
 
 const THEME_BLUE = '#274C77';
 
 const ProfileScreen = () => {
   const router = useRouter();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [displayName, setDisplayName] = useState<string>();
+
+  useEffect(() => {
+    const currentUser = auth.currentUser;
+
+    if (!currentUser) {
+      setDisplayName(undefined);
+      return;
+    }
+
+    const profileRef = doc(db, 'residents', currentUser.uid);
+
+    const unsubscribe = onSnapshot(
+      profileRef,
+      (profileSnap) => {
+        if (!profileSnap.exists()) {
+          setDisplayName(undefined);
+          return;
+        }
+
+        const data = profileSnap.data() as {
+          firstName?: string;
+          middleInitial?: string;
+          lastName?: string;
+        };
+
+        const fullName = [
+          data.firstName?.trim(),
+          data.middleInitial?.trim() ? `${data.middleInitial.trim()}.` : '',
+          data.lastName?.trim(),
+        ]
+          .filter(Boolean)
+          .join(' ');
+
+        setDisplayName(fullName || undefined);
+      },
+      (error) => {
+        console.error('Failed to listen to profile name:', error);
+      }
+    );
+
+    return unsubscribe;
+  }, []);
 
   // Function to simulate logout with loading state
   const handleLogout = () => {
@@ -26,7 +71,7 @@ const ProfileScreen = () => {
     // Simulate a 2-second delay for the logout process
     setTimeout(() => {
       setIsLoggingOut(false);
-      router.replace('/Mobile UI/UserLogInSignUp' as any);
+      router.replace('/mobile-ui/user-log-in-sign-up-screen');
     }, 2000);
   };
 
@@ -88,7 +133,7 @@ const ProfileScreen = () => {
       </View>
 
       <View style={styles.content}>
-        <Text style={styles.userName}>Juan Dela Cruz</Text>
+        <Text style={styles.userName}>{displayName}</Text>
 
         {/* 2. MENU LIST */}
         <FlatList
@@ -125,7 +170,7 @@ const ProfileScreen = () => {
       </View>
 
       {/* 3. LOGOUT MODAL (Mirroring Flutter Dialog) */}
-      <Modal visible={isLoggingOut} transparent animationType="fade">
+      <Modal visible={isLoggingOut} transparent animationType="none">
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <ActivityIndicator size="large" color={THEME_BLUE} />
@@ -269,16 +314,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalContent: {
-    backgroundColor: 'white',
-    padding: 30,
-    borderRadius: 20,
+    flex: 1,
+    width: '100%',
+    justifyContent: 'center',
     alignItems: 'center',
-    width: 250,
   },
   logoutText: {
     marginTop: 20,
     fontSize: 16,
     fontWeight: 'bold',
-    color: THEME_BLUE,
+    color: 'white',
   },
 });
