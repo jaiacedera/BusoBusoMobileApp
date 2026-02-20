@@ -8,13 +8,12 @@ import {
   Image,
   KeyboardAvoidingView,
   Platform,
-  ScrollView,
   StatusBar,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
 import { signInUser, signUpUser } from '../../services/authservice';
 
@@ -101,11 +100,7 @@ export default function UserLogInSignUp() {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}
       >
-        <ScrollView
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-          bounces={false}
-        >
+        <View style={styles.scrollContent}>
           {/* 2. Top Header Section */}
           <View style={styles.headerShadowContainer}>
             <View style={styles.headerContainer}>
@@ -131,7 +126,7 @@ export default function UserLogInSignUp() {
               </View>
 
               <Text style={styles.appTitle}>
-                Barangay Buso-Buso{'\n'}Resident EOC App
+                BARANGAY BUSO-BUSO{'\n'}RESIDENT EOC APP
               </Text>
 
               <View style={styles.tabBarContainer}>
@@ -157,7 +152,7 @@ export default function UserLogInSignUp() {
           </View>
 
           {/* 3. Form Section */}
-          <View style={styles.formContainer}>
+          <View style={[styles.formContainer, { paddingBottom: isLogin ? 30 : 8 }]}>
             <View style={styles.inputGroup}>
               <Text style={styles.inputLabel}>Email address</Text>
               <TextInput
@@ -171,7 +166,7 @@ export default function UserLogInSignUp() {
               />
             </View>
 
-            <View style={[styles.inputGroup, { marginTop: 25 }]}>
+            <View style={[styles.inputGroup, { marginTop: isLogin ? 10 : 6 }]}>
               <Text style={styles.inputLabel}>Password</Text>
               <View style={styles.passwordRow}>
                 <TextInput
@@ -192,7 +187,7 @@ export default function UserLogInSignUp() {
             </View>
 
             {!isLogin && (
-              <View style={[styles.inputGroup, { marginTop: 25 }]}>
+              <View style={[styles.inputGroup, { marginTop: 6 }]}>
                 <Text style={styles.inputLabel}>Confirm Password</Text>
                 <View style={styles.passwordRow}>
                   <TextInput
@@ -215,7 +210,7 @@ export default function UserLogInSignUp() {
 
             {/* Submit Button handles both Login and Signup navigation after auth */}
             <TouchableOpacity 
-              style={[styles.mainBtn, { marginTop: isLogin ? 40 : 30 }]}
+              style={[styles.mainBtn, { marginTop: isLogin ? 30 : 8 }]}
               activeOpacity={0.8}
               onPress={handleSubmit}
               disabled={loading}
@@ -229,13 +224,13 @@ export default function UserLogInSignUp() {
               )}
             </TouchableOpacity>
 
-            <View style={styles.dividerRow}>
+            <View style={[styles.dividerRow, { marginVertical: isLogin ? 20 : 12 }]}>
               <View style={styles.line} />
               <Text style={styles.orText}>or</Text>
               <View style={styles.line} />
             </View>
 
-            <TouchableOpacity style={styles.googleBtn}>
+            <TouchableOpacity style={[styles.googleBtn, { marginBottom: isLogin ? 30 : 8 }]}>
               <Image
                 source={{ uri: 'https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.png' }}
                 style={styles.googleIcon}
@@ -243,7 +238,7 @@ export default function UserLogInSignUp() {
               <Text style={styles.googleBtnText}>Continue with Google</Text>
             </TouchableOpacity>
           </View>
-        </ScrollView>
+        </View>
       </KeyboardAvoidingView>
 
       <View style={styles.footer}>
@@ -259,7 +254,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#1E3A5F' 
   },
   scrollContent: { 
-    flexGrow: 1 
+    flex: 1,
   },
   headerShadowContainer: {
     backgroundColor: 'transparent',
@@ -290,10 +285,13 @@ const styles = StyleSheet.create({
     borderRadius: 65,
     justifyContent: 'center', 
     alignItems: 'center',
+    // Ensure image is clipped to the rounded container
+    overflow: 'hidden',
   },
   logoImage: { 
-    width: '85%', 
-    height: '85%' 
+    // Fill the entire circle container
+    width: '100%', 
+    height: '100%' 
   },
   appTitle: {
     color: '#FFF', 
@@ -328,15 +326,16 @@ const styles = StyleSheet.create({
   },
   activeIndicator: { 
     position: 'absolute', 
-    bottom: 0, 
+    bottom: 40, 
     width: 82, 
     height: 3, 
     backgroundColor: '#FFFFFF' 
   },
   formContainer: { 
     paddingHorizontal: 53, 
-    paddingTop: 20, 
-    paddingBottom: 130 
+    paddingTop: 20,
+    // minimal bottom padding to fit all content
+    paddingBottom: 20,
   },
   inputGroup: { 
     borderBottomWidth: 1, 
@@ -373,7 +372,7 @@ const styles = StyleSheet.create({
   dividerRow: { 
     flexDirection: 'row', 
     alignItems: 'center', 
-    marginVertical: 25 
+    marginVertical: 10 
   },
   line: { 
     flex: 1, 
@@ -392,27 +391,42 @@ const styles = StyleSheet.create({
     height: 42, 
     flexDirection: 'row', 
     justifyContent: 'center', 
-    alignItems: 'center' 
+    alignItems: 'center',
+    // keep position relative so we can absolutely position children
+    position: 'relative',
+    // tighten spacing below the Google button
+    marginBottom: 12,
   },
   googleIcon: { 
     width: 20, 
-    height: 20, 
-    marginRight: 12 
+    height: 20,
+    // position on the left side of the button
+    position: 'absolute',
+    left: 14,
   },
   googleBtnText: { 
     color: '#274C77', 
     fontWeight: '700', 
-    fontSize: 14 
+    fontSize: 14,
+    // center text within the button regardless of icon
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    textAlign: 'center'
   },
   footer: { 
     position: 'absolute', 
-    bottom: 25, 
+    // move footer down a little bit
+    bottom: 18, 
     width: '100%', 
     alignItems: 'center' 
   },
   footerText: { 
-    color: '#F2EFEF', 
-    fontSize: 13, 
-    letterSpacing: 0.65 
+    color: '#FFFFFF', 
+    fontSize: 11, 
+    textAlign: 'center',
+    opacity: 0.8,
+    // compress letters for tight appearance
+    letterSpacing: -0.3
   },
 });
