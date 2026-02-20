@@ -1,18 +1,21 @@
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
-  Dimensions,
-  KeyboardAvoidingView,
-  Platform,
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    Alert,
+    Dimensions,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+    StatusBar,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { saveUserProfile } from '../../services/userProfileService';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -33,6 +36,7 @@ const UserForm = () => {
 
   // State for errors
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSaving, setIsSaving] = useState(false);
 
   const validate = () => {
     let newErrors: Record<string, string> = {};
@@ -53,10 +57,30 @@ const UserForm = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSave = () => {
-    if (validate()) {
-      // Replace with your actual dashboard route
-      router.replace('/mobile-ui/dashboard'); 
+  const handleSave = async () => {
+    if (!validate()) {
+      return;
+    }
+
+    try {
+      setIsSaving(true);
+      await saveUserProfile({
+        firstName: formData.firstName.trim(),
+        lastName: formData.lastName.trim(),
+        middleInitial: formData.middleInitial.trim(),
+        address: formData.address.trim(),
+        contactNumber: formData.contactNumber.trim(),
+        emergencyContact: formData.emergencyContact.trim(),
+      });
+
+      Alert.alert('Success', 'Profile information saved successfully.', [
+        { text: 'OK', onPress: () => router.replace('/mobile-ui/dashboard') },
+      ]);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unable to save profile right now.';
+      Alert.alert('Save Error', message);
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -160,8 +184,16 @@ const UserForm = () => {
           />
           {errors.emergencyContact && <Text style={styles.errorText}>{errors.emergencyContact}</Text>}
 
-          <TouchableOpacity style={styles.button} onPress={handleSave}>
-            <Text style={styles.buttonText}>SAVE AND CONTINUE</Text>
+          <TouchableOpacity
+            style={[styles.button, isSaving && styles.buttonDisabled]}
+            onPress={handleSave}
+            disabled={isSaving}
+          >
+            {isSaving ? (
+              <ActivityIndicator color="#FFFFFF" />
+            ) : (
+              <Text style={styles.buttonText}>SAVE AND CONTINUE</Text>
+            )}
           </TouchableOpacity>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -239,6 +271,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 40,
+  },
+  buttonDisabled: {
+    opacity: 0.7,
   },
   buttonText: {
     color: '#FFFFFF',

@@ -6,6 +6,7 @@ import {
   initializeAuth,
   type Auth,
 } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
 
 // Your web app's Firebase configuration
 //hingin kay llyne say ang config 
@@ -21,6 +22,7 @@ const firebaseConfig = {
 
 // Initialize Firebase once
 const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+export const db = getFirestore(app);
 
 // Initialize Firebase Auth with persisted state in React Native
 let authInstance: Auth;
