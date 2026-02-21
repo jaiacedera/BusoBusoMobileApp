@@ -65,7 +65,7 @@ const getLevelColor = (level: string): string => {
   const normalizedLevel = level.toLowerCase();
   if (normalizedLevel.includes('critical')) return 'red';
   if (normalizedLevel.includes('emergency')) return 'orange';
-  if (normalizedLevel.includes('warning')) return '#F4B400';
+  if (normalizedLevel.includes('caution')) return '#e6db00';
   return THEME_BLUE;
 };
 
