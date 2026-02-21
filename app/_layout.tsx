@@ -15,6 +15,7 @@ export default function RootLayout() {
       */}
       <Stack.Screen name="index" /> 
       <Stack.Screen name="mobile-ui/user-log-in-sign-up-screen" />
+      <Stack.Screen name="mobile-ui/get-started" />
       <Stack.Screen
         name="mobile-ui/dashboard"
         options={{
@@ -27,7 +28,24 @@ export default function RootLayout() {
           gestureEnabled: false,
         }}
       />
-      <Stack.Screen name="mobile-ui/user-form" />
+      <Stack.Screen
+        name="mobile-ui/reports-screen"
+        options={{
+          gestureEnabled: false,
+        }}
+      />
+      <Stack.Screen
+        name="mobile-ui/reports-tracker-screen"
+        options={{
+          gestureEnabled: false,
+        }}
+      />
+      <Stack.Screen
+        name="mobile-ui/user-form"
+        options={{
+          gestureEnabled: false,
+        }}
+      />
     </Stack>
   );
 }

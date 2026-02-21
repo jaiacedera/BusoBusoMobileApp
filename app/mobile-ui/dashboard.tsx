@@ -9,7 +9,9 @@ import {
   type Timestamp,
 } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
+
 import {
+  BackHandler,
   Dimensions,
   Image,
   KeyboardAvoidingView,
@@ -22,6 +24,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { db } from '../../services/firebaseconfig';
 
@@ -76,6 +79,14 @@ export default function DashboardScreen() {
   const [actionMenuVisible, setActionMenuVisible] = useState(false);
   const [chatbotVisible, setChatbotVisible] = useState(false);
   const [alerts, setAlerts] = useState<AlertItem[]>([]);
+
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+      return true; // Prevent back navigation
+    });
+
+    return () => backHandler.remove();
+  }, []);
 
   useEffect(() => {
     const alertsRef = collection(db, 'alerts');

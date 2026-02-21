@@ -17,7 +17,7 @@ const GetStartedScreen = () => {
   const router = useRouter();
 
   const handleGetStarted = () => {
-    router.push('/mobile-ui/user-log-in-sign-up-screen');
+    router.replace('/mobile-ui/user-log-in-sign-up-screen');
   };
 
   return (

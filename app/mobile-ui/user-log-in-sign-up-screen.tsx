@@ -122,7 +122,7 @@ export default function UserLogInSignUp() {
         const user = await signUpUser(email, password);
         if (user) {
           // Navigate to UserForm on successful signup
-          router.push('/mobile-ui/user-form');
+          router.replace('/mobile-ui/user-form');
         }
       }
     } catch (error) {

@@ -4,6 +4,7 @@ import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
+  BackHandler,
   ScrollView,
   StatusBar,
   StyleSheet,
@@ -30,6 +31,14 @@ const ReportTrackerScreen = () => {
   const [reports, setReports] = useState<TrackedReport[]>([]);
   const [searchText, setSearchText] = useState('');
   const [isLoadingReports, setIsLoadingReports] = useState(true);
+
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+      return true; // Prevent back navigation
+    });
+
+    return () => backHandler.remove();
+  }, []);
 
   useEffect(() => {
     const currentUser = auth.currentUser;

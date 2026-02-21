@@ -1,8 +1,9 @@
 import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     ActivityIndicator,
     Alert,
+    BackHandler,
     Dimensions,
     KeyboardAvoidingView,
     Platform,
@@ -37,6 +38,14 @@ const UserForm = () => {
   // State for errors
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+      return true; // Prevent back navigation
+    });
+
+    return () => backHandler.remove();
+  }, []);
 
   const validate = () => {
     let newErrors: Record<string, string> = {};

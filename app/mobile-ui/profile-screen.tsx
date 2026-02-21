@@ -3,18 +3,19 @@ import { useRouter } from 'expo-router';
 import { doc, onSnapshot } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
 import {
-  ActivityIndicator,
-  FlatList,
-  Image,
-  ImageBackground,
-  KeyboardAvoidingView,
-  Modal,
-  Platform,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    BackHandler,
+    FlatList,
+    Image,
+    ImageBackground,
+    KeyboardAvoidingView,
+    Modal,
+    Platform,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 import { auth, db } from '../../services/firebaseconfig';
 
@@ -37,6 +38,14 @@ const ProfileScreen = () => {
   const [isProfileLoading, setIsProfileLoading] = useState(true);
   const [showPersonalInfoModal, setShowPersonalInfoModal] = useState(false);
   const [chatbotVisible, setChatbotVisible] = useState(false);
+
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+      return true; // Prevent back navigation
+    });
+
+    return () => backHandler.remove();
+  }, []);
 
   useEffect(() => {
     const currentUser = auth.currentUser;

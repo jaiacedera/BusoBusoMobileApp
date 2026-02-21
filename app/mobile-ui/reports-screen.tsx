@@ -8,9 +8,10 @@ import {
     runTransaction,
     serverTimestamp,
 } from 'firebase/firestore';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Alert,
+    BackHandler,
     KeyboardAvoidingView,
     Platform,
     ScrollView,
@@ -35,6 +36,14 @@ const ReportsScreen = () => {
   const [isCopyingProfile, setIsCopyingProfile] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [reportId, setReportId] = useState('');
+
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+      return true; // Prevent back navigation
+    });
+
+    return () => backHandler.remove();
+  }, []);
 
   const formatDateKey = (date: Date) => {
     const year = date.getFullYear();
