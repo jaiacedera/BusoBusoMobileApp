@@ -1,26 +1,26 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import {
-    addDoc,
-    collection,
-    doc,
-    getDoc,
-    runTransaction,
-    serverTimestamp,
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  runTransaction,
+  serverTimestamp,
 } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
 import {
-    Alert,
-    BackHandler,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StatusBar,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Alert,
+  BackHandler,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from 'react-native';
 import { auth, db } from '../../services/firebaseconfig';
 
@@ -44,6 +44,16 @@ const ReportsScreen = () => {
 
     return () => backHandler.remove();
   }, []);
+
+  const handleMicPress = () => {
+    Alert.alert(
+      'Voice Input',
+      'Voice input feature requires rebuilding the app with native modules. For now, please type your report manually.',
+      [
+        { text: 'OK', style: 'default' }
+      ]
+    );
+  };
 
   const formatDateKey = (date: Date) => {
     const year = date.getFullYear();
@@ -218,7 +228,11 @@ const ReportsScreen = () => {
         />
 
         <View style={styles.footerRow}>
-          <TouchableOpacity style={styles.micBtn}>
+          <TouchableOpacity 
+            style={styles.micBtn}
+            onPress={handleMicPress}
+            activeOpacity={0.7}
+          >
             <Ionicons name="mic" size={24} color="white" />
           </TouchableOpacity>
 
@@ -373,6 +387,15 @@ const styles = StyleSheet.create({
     backgroundColor: THEME_BLUE,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  micBtnRecording: {
+    backgroundColor: '#DC2626',
+  },
+  recordingText: {
+    fontSize: 12,
+    color: THEME_BLUE,
+    fontStyle: 'italic',
+    marginLeft: 8,
   },
   submitBtn: {
     backgroundColor: THEME_BLUE,

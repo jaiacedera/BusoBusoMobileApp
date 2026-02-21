@@ -23,9 +23,13 @@
     "android/build",
     "android/app/build"
   ],
+  "java.project.referencedLibraries": [],
+  "java.checkConfiguration": false,
+  "java.project.importHint": false,
   "java.project.outputPath": "android/app/build/intermediates/javac/debug/classes",
   "problems.exclude": {
-    "**/node_modules/**": true
+    "**/node_modules/**": true,
+    "**/node_modules/**/android/**": true
   },
   "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
@@ -38,5 +42,16 @@
     "**/android/build/**",
     "**/android/app/build/**"
   ],
-  "java.project.importOnFirstTimeStartup": "disabled"
+  "java.project.importOnFirstTimeStartup": "disabled",
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/.git/**": true,
+    "**/android/build/**": true,
+    "**/android/app/build/**": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/android/build": true,
+    "**/android/app/build": true
+  }
 }

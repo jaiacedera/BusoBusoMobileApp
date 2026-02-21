@@ -9,7 +9,11 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "This app needs access to your microphone to record voice reports.",
+        "NSSpeechRecognitionUsageDescription": "This app needs to recognize your speech to convert it to text for reports."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -17,7 +21,10 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.anonymous.BusoBusoMobileApp"
+      "package": "com.anonymous.BusoBusoMobileApp",
+      "permissions": [
+        "RECORD_AUDIO"
+      ]
     },
     "web": {
       "output": "static"
