@@ -1,7 +1,9 @@
 import { MaterialIcons } from '@expo/vector-icons';
+import * as Google from 'expo-auth-session/providers/google';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import * as WebBrowser from 'expo-web-browser';
+import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -15,7 +17,18 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
-import { signInUser, signUpUser } from '../../services/authservice';
+import {
+  signInUser,
+  signInWithGoogleIdToken,
+  signUpUser,
+} from '../../services/authservice';
+
+WebBrowser.maybeCompleteAuthSession();
+
+const GOOGLE_WEB_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID;
+const GOOGLE_ANDROID_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID;
+const GOOGLE_IOS_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID;
+const GOOGLE_FALLBACK_CLIENT_ID = 'missing-client-id.apps.googleusercontent.com';
 
 export default function UserLogInSignUp() {
   const router = useRouter(); 
@@ -28,6 +41,51 @@ export default function UserLogInSignUp() {
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const resolvedWebClientId = GOOGLE_WEB_CLIENT_ID ?? GOOGLE_FALLBACK_CLIENT_ID;
+  const resolvedAndroidClientId =
+    GOOGLE_ANDROID_CLIENT_ID ?? GOOGLE_WEB_CLIENT_ID ?? GOOGLE_FALLBACK_CLIENT_ID;
+  const resolvedIosClientId =
+    GOOGLE_IOS_CLIENT_ID ?? GOOGLE_WEB_CLIENT_ID ?? GOOGLE_FALLBACK_CLIENT_ID;
+
+  const [googleRequest, googleResponse, promptGoogleSignIn] = Google.useIdTokenAuthRequest({
+    clientId: resolvedWebClientId,
+    androidClientId: resolvedAndroidClientId,
+    iosClientId: resolvedIosClientId,
+  });
+
+  useEffect(() => {
+    if (!googleResponse) {
+      return;
+    }
+
+    if (googleResponse.type !== 'success') {
+      setLoading(false);
+      return;
+    }
+
+    const idToken =
+      'params' in googleResponse && typeof googleResponse.params?.id_token === 'string'
+        ? googleResponse.params.id_token
+        : null;
+
+    if (!idToken) {
+      setLoading(false);
+      Alert.alert('Google Sign-In Error', 'Google authentication token was not received.');
+      return;
+    }
+
+    const signInWithGoogle = async () => {
+      const user = await signInWithGoogleIdToken(idToken);
+      setLoading(false);
+
+      if (user) {
+        router.replace('/mobile-ui/dashboard');
+      }
+    };
+
+    void signInWithGoogle();
+  }, [googleResponse, router]);
 
   const handleTabToggle = (toLogin: boolean) => {
     setIsLogin(toLogin);
@@ -71,6 +129,50 @@ export default function UserLogInSignUp() {
       console.error(error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    if (Platform.OS === 'android' && !GOOGLE_ANDROID_CLIENT_ID && !GOOGLE_WEB_CLIENT_ID) {
+      Alert.alert(
+        'Google Sign-In Not Configured',
+        'Set EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID (or EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID) in your .env file.'
+      );
+      return;
+    }
+
+    if (Platform.OS === 'ios' && !GOOGLE_IOS_CLIENT_ID && !GOOGLE_WEB_CLIENT_ID) {
+      Alert.alert(
+        'Google Sign-In Not Configured',
+        'Set EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID (or EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID) in your .env file.'
+      );
+      return;
+    }
+
+    if (Platform.OS === 'web' && !GOOGLE_WEB_CLIENT_ID) {
+      Alert.alert(
+        'Google Sign-In Not Configured',
+        'Set EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID in your .env file.'
+      );
+      return;
+    }
+
+    if (!googleRequest) {
+      Alert.alert('Google Sign-In', 'Google sign-in is still initializing. Please try again.');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const result = await promptGoogleSignIn();
+
+      if (result.type !== 'success') {
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error('Google sign-in failed:', error);
+      setLoading(false);
+      Alert.alert('Google Sign-In Error', 'Unable to continue with Google right now.');
     }
   };
 
@@ -231,7 +333,11 @@ export default function UserLogInSignUp() {
               <View style={styles.line} />
             </View>
 
-            <TouchableOpacity style={[styles.googleBtn, { marginBottom: isLogin ? 30 : 8 }]}>
+            <TouchableOpacity
+              style={[styles.googleBtn, { marginBottom: isLogin ? 30 : 8 }]}
+              onPress={handleGoogleSignIn}
+              disabled={loading}
+            >
               <Image
                 source={{ uri: 'https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.png' }}
                 style={styles.googleIcon}

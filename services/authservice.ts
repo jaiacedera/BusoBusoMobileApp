@@ -1,5 +1,7 @@
 import {
   createUserWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithCredential,
   signInWithEmailAndPassword,
   User
 } from 'firebase/auth';
@@ -71,6 +73,28 @@ export const signInUser = async (
         );
       } else {
         Alert.alert('Login Error', error.message);
+      }
+    }
+    return null;
+  }
+};
+
+export const signInWithGoogleIdToken = async (
+  idToken: string
+): Promise<User | null> => {
+  try {
+    const credential = GoogleAuthProvider.credential(idToken);
+    const userCredential = await signInWithCredential(auth, credential);
+    return userCredential.user;
+  } catch (error: unknown) {
+    if (isFirebaseError(error)) {
+      if (error.code === 'auth/operation-not-allowed') {
+        Alert.alert(
+          'Google Sign-In Disabled',
+          'Google provider is not enabled in Firebase Authentication for this project.'
+        );
+      } else {
+        Alert.alert('Google Sign-In Error', error.message);
       }
     }
     return null;

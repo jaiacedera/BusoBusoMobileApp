@@ -27,6 +27,10 @@
   "problems.exclude": {
     "**/node_modules/**": true
   },
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "typescript.tsserver.experimental.enableProjectDiagnostics": false,
+  "json.schemaDownload.enable": false,
   "java.import.exclusions": [
     "**/node_modules/**",
     "**/.gradle/**",

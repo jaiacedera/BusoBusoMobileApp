@@ -1,6 +1,14 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import {
+  collection,
+  limit,
+  onSnapshot,
+  orderBy,
+  query,
+  type Timestamp,
+} from 'firebase/firestore';
+import React, { useEffect, useState } from 'react';
 import {
   Dimensions,
   Image,
@@ -15,10 +23,51 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { db } from '../../services/firebaseconfig';
 
 const THEME_BLUE = '#274C77';
 const BG_COLOR = '#F0F4F8';
 const { height } = Dimensions.get('window');
+
+type AlertItem = {
+  id: string;
+  level: string;
+  message: string;
+  timestamp: Date | null;
+};
+
+const formatRelativeTime = (date: Date | null): string => {
+  if (!date) {
+    return 'Unknown time';
+  }
+
+  const diffMs = Date.now() - date.getTime();
+  const minuteMs = 60 * 1000;
+  const hourMs = 60 * minuteMs;
+  const dayMs = 24 * hourMs;
+
+  if (diffMs < minuteMs) {
+    return 'Just now';
+  }
+  if (diffMs < hourMs) {
+    const minutes = Math.max(1, Math.floor(diffMs / minuteMs));
+    return `${minutes} min${minutes > 1 ? 's' : ''} ago`;
+  }
+  if (diffMs < dayMs) {
+    const hours = Math.floor(diffMs / hourMs);
+    return `${hours} hr${hours > 1 ? 's' : ''} ago`;
+  }
+  const days = Math.floor(diffMs / dayMs);
+  return `${days} day${days > 1 ? 's' : ''} ago`;
+};
+
+const getLevelColor = (level: string): string => {
+  const normalizedLevel = level.toLowerCase();
+  if (normalizedLevel.includes('critical')) return 'red';
+  if (normalizedLevel.includes('emergency')) return 'orange';
+  if (normalizedLevel.includes('warning')) return '#F4B400';
+  return THEME_BLUE;
+};
 
 export default function DashboardScreen() {
   const router = useRouter();
@@ -26,6 +75,42 @@ export default function DashboardScreen() {
   // Modal states
   const [actionMenuVisible, setActionMenuVisible] = useState(false);
   const [chatbotVisible, setChatbotVisible] = useState(false);
+  const [alerts, setAlerts] = useState<AlertItem[]>([]);
+
+  useEffect(() => {
+    const alertsRef = collection(db, 'alerts');
+    const alertsQuery = query(alertsRef, orderBy('timestamp', 'desc'), limit(3));
+
+    const unsubscribe = onSnapshot(
+      alertsQuery,
+      (snapshot) => {
+        const nextAlerts = snapshot.docs.map((document) => {
+          const data = document.data() as {
+            level?: string;
+            alertMessage?: string;
+            message?: string;
+            timestamp?: Timestamp;
+            createdAt?: Timestamp;
+          };
+
+          return {
+            id: document.id,
+            level: (data.level ?? 'ADVISORY').toString(),
+            message: (data.alertMessage ?? data.message ?? 'No alert message provided.').toString(),
+            timestamp: data.timestamp?.toDate() ?? data.createdAt?.toDate() ?? null,
+          };
+        });
+
+        setAlerts(nextAlerts);
+      },
+      (error) => {
+        console.error('Failed to fetch alerts:', error);
+        setAlerts([]);
+      }
+    );
+
+    return unsubscribe;
+  }, []);
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
@@ -48,7 +133,7 @@ export default function DashboardScreen() {
 
         {/* MAIN CONTENT AREA */}
         <View style={styles.body}>
-          <HomeContent />
+          <HomeContent alerts={alerts} />
           
           {/* CHATBOT FLOATING BUTTON */}
           <TouchableOpacity 
@@ -170,23 +255,26 @@ export default function DashboardScreen() {
 }
 
 // --- HOME CONTENT COMPONENT ---
-const HomeContent = () => {
+const HomeContent = ({ alerts }: { alerts: AlertItem[] }) => {
   return (
     <ScrollView contentContainerStyle={styles.homeScrollContent} showsVerticalScrollIndicator={false}>
       <Text style={styles.sectionTitle}>Emergency News & Updates</Text>
-      
-      <NewsCard 
-        tag="CRITICAL ADVISORY" 
-        tagColor="red" 
-        title="Taal Volcano: SO2 levels rising..." 
-        time="5 mins ago" 
-      />
-      <NewsCard 
-        tag="EMERGENCY ADVISORY" 
-        tagColor="orange" 
-        title="Heavy Rainfall: Flood Warning..." 
-        time="11 hr ago" 
-      />
+
+      {alerts.length > 0 ? (
+        alerts.map((alert) => (
+          <NewsCard
+            key={alert.id}
+            tag={alert.level}
+            tagColor={getLevelColor(alert.level)}
+            title={alert.message}
+            time={formatRelativeTime(alert.timestamp)}
+          />
+        ))
+      ) : (
+        <View style={styles.emptyNewsCard}>
+          <Text style={styles.emptyNewsText}>No emergency alerts available right now.</Text>
+        </View>
+      )}
 
       <View style={{ height: 25 }} />
       <Text style={styles.sectionTitle}>Hazard Map</Text>
@@ -458,6 +546,16 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
     color: 'grey',
     fontSize: 11,
+  },
+  emptyNewsCard: {
+    backgroundColor: 'white',
+    borderRadius: 15,
+    padding: 15,
+    marginBottom: 12,
+  },
+  emptyNewsText: {
+    color: '#666',
+    fontSize: 13,
   },
   mapCard: {
     backgroundColor: 'white',
